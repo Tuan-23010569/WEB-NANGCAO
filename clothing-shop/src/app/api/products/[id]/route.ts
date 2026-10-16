@@ -66,5 +66,5 @@ export async function DELETE(
         );
     }
 
-    return deleteProductController(productId);
+    return deleteProductController(_request, productId);
 }

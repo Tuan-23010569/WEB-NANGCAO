@@ -4,6 +4,7 @@ import {
     createVariant,
     getVariantsByProductId,
 } from "@/services/variantService";
+import { authorizeAdmin } from "@/lib/adminAuth";
 
 export async function getVariantsController(productId: number) {
     try {
@@ -27,6 +28,8 @@ export async function createVariantController(
     request: Request,
     productId: number
 ) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         const body = await request.json();
 
@@ -117,6 +120,8 @@ export async function updateVariantController(
     request: Request,
     variantId: number
 ) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         const body = await request.json();
 
@@ -221,7 +226,12 @@ export async function updateVariantController(
     }
 }
 
-export async function deleteVariantController(variantId: number) {
+export async function deleteVariantController(
+    request: Request,
+    variantId: number
+) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         await deleteVariant(variantId);
 

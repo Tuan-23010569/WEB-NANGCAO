@@ -1,6 +1,5 @@
-
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { authorizeAdmin } from "@/lib/adminAuth";
 import {
     getCategoryById,
     updateCategory,
@@ -11,6 +10,8 @@ type Context = {
     params: Promise<{ id: string }>;
 };
 
+// GET: Lấy thông tin chi tiết danh mục
+// Giữ công khai để trang sản phẩm có thể xem danh mục
 export async function GET(
     _request: Request,
     { params }: Context
@@ -20,7 +21,10 @@ export async function GET(
 
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
         return NextResponse.json(
-            { success: false, message: "Invalid category ID" },
+            {
+                success: false,
+                message: "Invalid category ID",
+            },
             { status: 400 }
         );
     }
@@ -30,31 +34,53 @@ export async function GET(
 
         if (!category) {
             return NextResponse.json(
-                { success: false, message: "Category not found" },
+                {
+                    success: false,
+                    message: "Category not found",
+                },
                 { status: 404 }
             );
         }
 
-        return NextResponse.json({ success: true, data: category });
+        return NextResponse.json({
+            success: true,
+            data: category,
+        });
     } catch (error) {
         console.error("Get category error:", error);
+
         return NextResponse.json(
-            { success: false, message: "Internal server error" },
+            {
+                success: false,
+                message: "Internal server error",
+            },
             { status: 500 }
         );
     }
 }
 
+// PATCH: Cập nhật danh mục
+// Chỉ ADMIN mới được phép thực hiện
 export async function PATCH(
     request: Request,
     { params }: Context
 ) {
+    // Kiểm tra quyền quản trị trước khi xử lý
+    const authError = await authorizeAdmin(request);
+
+    if (authError) {
+        return authError;
+    }
+
     const { id } = await params;
     const categoryId = Number(id);
 
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
         return NextResponse.json(
-            { success: false, message: "Invalid category ID" },
+            {
+                success: false,
+                message: "Invalid category ID",
+            },
             { status: 400 }
         );
     }
@@ -62,9 +88,15 @@ export async function PATCH(
     try {
         const body = await request.json();
 
-        if (typeof body.name !== "string" || !body.name.trim()) {
+        if (
+            typeof body.name !== "string" ||
+            !body.name.trim()
+        ) {
             return NextResponse.json(
-                { success: false, message: "Category name is required" },
+                {
+                    success: false,
+                    message: "Category name is required",
+                },
                 { status: 400 }
             );
         }
@@ -73,12 +105,18 @@ export async function PATCH(
 
         if (!existing) {
             return NextResponse.json(
-                { success: false, message: "Category not found" },
+                {
+                    success: false,
+                    message: "Category not found",
+                },
                 { status: 404 }
             );
         }
 
-        const category = await updateCategory(categoryId, body.name);
+        const category = await updateCategory(
+            categoryId,
+            body.name.trim()
+        );
 
         return NextResponse.json({
             success: true,
@@ -93,29 +131,48 @@ export async function PATCH(
             error.code === "P2002"
         ) {
             return NextResponse.json(
-                { success: false, message: "Category name or slug already exists" },
+                {
+                    success: false,
+                    message: "Category name or slug already exists",
+                },
                 { status: 409 }
             );
         }
 
         console.error("Update category error:", error);
+
         return NextResponse.json(
-            { success: false, message: "Internal server error" },
+            {
+                success: false,
+                message: "Internal server error",
+            },
             { status: 500 }
         );
     }
 }
 
+// DELETE: Xóa danh mục
+// Chỉ ADMIN mới được phép thực hiện
 export async function DELETE(
-    _request: Request,
+    request: Request,
     { params }: Context
 ) {
+    // Kiểm tra quyền quản trị trước khi xử lý
+    const authError = await authorizeAdmin(request);
+
+    if (authError) {
+        return authError;
+    }
+
     const { id } = await params;
     const categoryId = Number(id);
 
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
         return NextResponse.json(
-            { success: false, message: "Invalid category ID" },
+            {
+                success: false,
+                message: "Invalid category ID",
+            },
             { status: 400 }
         );
     }
@@ -125,7 +182,10 @@ export async function DELETE(
 
         if (!existing) {
             return NextResponse.json(
-                { success: false, message: "Category not found" },
+                {
+                    success: false,
+                    message: "Category not found",
+                },
                 { status: 404 }
             );
         }

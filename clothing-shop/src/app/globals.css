@@ -1,26 +1,179 @@
 @import "tailwindcss";
 
+/* ==============================
+   THEME: LIGHT
+   ============================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --background: #f7f5f0;
+  --foreground: #25271f;
+
+  --surface: #ffffff;
+  --surface-secondary: #f0eee7;
+
+  --text-primary: #25271f;
+  --text-secondary: #62665b;
+  --text-muted: #777b72;
+
+  --border: #e2e0d8;
+  --input-background: #ffffff;
+  --placeholder: #85877f;
+
+  --primary: #737b59;
+  --primary-hover: #626a49;
+  --primary-foreground: #ffffff;
+
+  --success: #16803d;
+  --danger: #dc2626;
+  --warning: #b45309;
+
+  --background-overlay: rgb(0 0 0 / 45%);
 }
 
+/* ==============================
+   TAILWIND THEME
+   ============================== */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Bổ sung map biến màu để dùng class Tailwind (ví dụ: text-text-primary, bg-surface) */
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==============================
+   THEME: DARK
+   Kích hoạt khi html có class="dark"
+   ============================== */
+html.dark {
+  color-scheme: dark;
+
+  --background: #11130f;
+  --foreground: #f1f2ed;
+
+  --surface: #1b1e18;
+  --surface-secondary: #252920;
+
+  --text-primary: #f1f2ed;
+  --text-secondary: #c1c5b9;
+  --text-muted: #a0a598;
+
+  --border: #3b4034;
+  --input-background: #252920;
+  --placeholder: #a0a598;
+
+  --primary: #a4ad84;
+  --primary-hover: #bbc39e;
+  --primary-foreground: #171a13;
+
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+
+  --background-overlay: rgb(0 0 0 / 65%);
+}
+
+/* Defaults stay below Tailwind utilities in the cascade. */
+@layer base {
+  html {
+    min-height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  }
+
+  /* Headings, links and buttons inherit the surrounding text color. */
+  h1, h2, h3, h4, h5, h6, a, button {
+    color: inherit;
+  }
+
+  input, select, textarea {
+    color: var(--text-primary);
+    background-color: var(--input-background);
+    border-color: var(--border);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--placeholder);
+    opacity: 1;
+  }
+
+  input[type="checkbox"], input[type="radio"] {
+    accent-color: var(--primary);
+  }
+
+  hr, table, th, td {
+    border-color: var(--border);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  ::selection {
+    color: #ffffff;
+    background-color: #626a49;
+  }
+
+  html.dark ::selection {
+    color: #171a13;
+    background-color: #bbc39e;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-muted {
+    color: var(--text-muted);
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: 1px solid var(--primary);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+  }
+
+  .btn-secondary {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--surface-secondary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }

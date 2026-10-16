@@ -1,6 +1,7 @@
 
 import { NextResponse } from "next/server";
 import * as productService from "@/services/productService";
+import { authorizeAdmin } from "@/lib/adminAuth";
 
 function isPrismaError(
     error: unknown,
@@ -81,6 +82,8 @@ export async function getProductsController(request: Request) {
 }
 
 export async function createProductController(request: Request) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         const body = await request.json();
 
@@ -208,6 +211,8 @@ export async function updateProductController(
     request: Request,
     id: number
 ) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         const body = await request.json();
 
@@ -259,7 +264,12 @@ export async function updateProductController(
     }
 }
 
-export async function deleteProductController(id: number) {
+export async function deleteProductController(
+    request: Request,
+    id: number
+) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         await productService.deleteProduct(id);
 

@@ -1,6 +1,7 @@
 
 import { NextResponse } from "next/server";
 import * as categoryService from "@/services/categoryService";
+import { authorizeAdmin } from "@/lib/adminAuth";
 
 export async function getCategoriesController() {
     try {
@@ -21,6 +22,8 @@ export async function getCategoriesController() {
 }
 
 export async function createCategoryController(request: Request) {
+    const authError = await authorizeAdmin(request);
+    if (authError) return authError;
     try {
         const body = await request.json();
         const name = body.name;

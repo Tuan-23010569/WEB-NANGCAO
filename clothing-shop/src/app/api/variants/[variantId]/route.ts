@@ -48,5 +48,5 @@ export async function DELETE(
         );
     }
 
-    return deleteVariantController(id);
+    return deleteVariantController(_request, id);
 }
